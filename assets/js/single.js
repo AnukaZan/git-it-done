@@ -88,4 +88,3 @@ var getRepoIssues = function(repo){
 };
 
 getRepoName();
-//getRepoIssues(repoName);

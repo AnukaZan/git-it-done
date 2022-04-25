@@ -2,6 +2,35 @@ var repoContainerEl = document.querySelector("#repos-container"); //list of repo
 
 var repoSearchTerm = document.querySelector("#repo-search-term"); //search term
 
+var languageButtonsEl = document.querySelector("#language-buttons");
+
+var buttonClickHandler = function(event){
+    var language = event.target.getAttribute("data-language");
+    if(language){
+        getFeaturedRepos(language);
+
+        //clear old content
+        repoContainerEl.textContent="";
+    }
+
+}
+
+var getFeaturedRepos = function(language){
+    var apiUrl = "https://api.github.com/search/repositories?q=" + language + "+is:featured&sort=help-wanted-issues";
+
+    fetch(apiUrl).then(function(response){
+        if (response.ok){
+            response.json().then(function(data){
+                displayRepos(data.items, language); //display all language items
+            });
+        } else {
+            alert("Error: Github user not found");
+        }
+    });
+};
+
+
+
 var displayRepos = function(repos, searchTerm){
     //check if api returned any repos
     if (repos.length === 0){
@@ -88,3 +117,4 @@ var formSubmitHandler = function(event){
 
 userFormEl.addEventListener("submit", formSubmitHandler); //when submit is clicked on whole form, have formSubmitHandler go off
 
+languageButtonsEl.addEventListener("click", buttonClickHandler);
