@@ -3,6 +3,12 @@ var repoContainerEl = document.querySelector("#repos-container"); //list of repo
 var repoSearchTerm = document.querySelector("#repo-search-term"); //search term
 
 var displayRepos = function(repos, searchTerm){
+    //check if api returned any repos
+    if (repos.length === 0){
+        repoContainerEl.textContent = "No repositories found";
+        return;
+    }
+    
     repoContainerEl.textContent = "";
     repoSearchTerm.textContent = searchTerm;
 
@@ -21,7 +27,22 @@ var displayRepos = function(repos, searchTerm){
         //append to container
         repoEl.appendChild(titleEl); //put the span element with repo name in div container
 
-        //append container to the dorm
+        //create a status element
+        var statusEl = document.createElement("span");
+        statusEl.classList = "flex-row align-center";
+
+        //check if current repo has issues or not
+        if (repos[i].open_issues_count > 0){ //if there are repo issues
+            statusEl.innerHTML=
+            "<i class='fas fa-times status-icon icon-danger'></i>" + repos[i].open_issues_count + "issue(s)";
+        } else {
+            statusEl.innerHTML="<i class='fas fa-check-square status-icon icon-success'></i>";
+        }
+
+        //append status to div container
+        repoEl.appendChild(statusEl);
+
+        //append div container to the repo list
         repoContainerEl.appendChild(repoEl); //put div container at the end of list of repo searches
     }
 };
@@ -29,13 +50,23 @@ var displayRepos = function(repos, searchTerm){
 var getUserRepos = function(user){
     //format github api url
     var apiUrl = "https://api.github.com/users/" + user + "/repos";
-
+    console.log(user);
     //make a request to the url
-    fetch(apiUrl).then(function(response){
-        response.json().then(function(data){
-            displayRepos(data, user);
+    fetch(apiUrl)
+        .then(function(response){
+            //request was successful
+            if (response.ok){
+                response.json().then(function(data){
+                    displayRepos(data, user);
+                });
+            } else{
+                alert("Error: Github User Not Found");
+            }
+        })
+        .catch(function(error){
+            //catch network error for retreiving user data
+            alert("Unable to connect to Github");
         });
-    });
 };
 
 
@@ -43,6 +74,7 @@ var userFormEl = document.querySelector("#user-form");//whole form with input + 
 var nameInputEl = document.querySelector("#username"); //input
 
 var formSubmitHandler = function(event){
+    console.log("formSubmitHandler");
     //get value from input element
     var username = nameInputEl.value.trim();
 
