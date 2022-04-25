@@ -50,7 +50,6 @@ var displayRepos = function(repos, searchTerm){
 var getUserRepos = function(user){
     //format github api url
     var apiUrl = "https://api.github.com/users/" + user + "/repos";
-    console.log(user);
     //make a request to the url
     fetch(apiUrl)
         .then(function(response){
@@ -74,7 +73,7 @@ var userFormEl = document.querySelector("#user-form");//whole form with input + 
 var nameInputEl = document.querySelector("#username"); //input
 
 var formSubmitHandler = function(event){
-    console.log("formSubmitHandler");
+    event.preventDefault();
     //get value from input element
     var username = nameInputEl.value.trim();
 
